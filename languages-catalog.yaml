@@ -1,0 +1,191 @@
+openapi: 3.0.3
+info:
+  title: Catalog of programming languages
+  description: Web Service to perform CRUD operations with catalog of programming languages
+  contact:
+    email: aasudarikov@gmail.com
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080
+paths:
+  /language:
+    summary: Catalog of programming languages
+    description: CRUD operations with catalog of programming languages
+    get:
+      summary: Retrieve all programming languages
+      tags: 
+        - Languages
+      operationId: getAllLanguages
+      responses:
+        '200':
+          description: Successful response with list of programming languages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Language"
+        'default':
+          description: Unsuccessful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    post:
+      summary: Add programming language
+      tags: 
+        - Languages
+      operationId: createLanguage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Language"
+      responses:
+        '200':
+          description: Successful response with state of operation and language
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/State"
+        'default':
+          description: Unsuccessful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /language/{language_name}:
+    get:
+      summary: Retrieve programming language by name
+      tags: 
+        - Languages
+      operationId: getLanguageByName
+      parameters: 
+        - name: language_name
+          in: path
+          required: true
+          description: Name of programming language to retrieve
+          schema:
+            type: string
+          example: Java
+      responses:
+        '200':
+          description: Successful response with programming language
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Language"
+        'default':
+          description: Unsuccessful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    put:
+      summary: Update programming language by name
+      tags:
+        - Languages
+      operationId: updateLanguageByName
+      parameters:
+        - name: language_name
+          in: path
+          required: true
+          description: Name of programming language to update
+          schema:
+            type: string
+          example: Java
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Language"
+      responses:
+        '200':
+          description: Successful response with state of operation and language
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/State"
+        'default':
+          description: Unsuccessful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    delete:
+      summary: Delete programming language by name
+      tags: 
+        - Languages
+      operationId: deleteLanguageByName
+      parameters: 
+        - name: language_name
+          in: path
+          required: true
+          description: Name of programming language to delete
+          schema:
+            type: string
+          example: Java
+      responses:
+        '200':
+          description: Successful response with state of operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/State"
+        'default':
+          description: Unsuccessful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+components:
+  schemas:
+    Language:
+      type: object
+      required: 
+        - name
+        - rating
+      properties:
+        name:
+          type: string
+          pattern: '^(Java|JavaScript|C#|C\+\+|Python)$'
+          description: Name of programming language
+          example: Java
+        description:
+          type: string
+          maxLength: 100
+          description: Summary about programming language
+          example: Java programming language
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Rating of programming language
+          example: 5
+    State:
+      type: object
+      required: 
+        - state
+        - body
+      properties:
+        state:
+          type: string
+          description: State of operation
+          example: ok
+        body:
+          $ref: "#/components/schemas/Language"
+    ApiError:
+      type: object
+      required: 
+        - errorCode
+      properties:
+        errorCode:
+          type: string
+          description: Error code
+          example: LANGUAGE_NOT_FOUND
+        errorMessage:
+          type: string
+          description: Error message
+          example: Language with name=Java not found
